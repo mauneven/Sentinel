@@ -54,6 +54,10 @@
     "create": "Create",
     "info_title": "About Sentinel",
     "info_message": "Sentinel helps you protect focus and health with simple break reminders while you work.",
+    "next_reminders": "Next reminders",
+    "less_than": "Less than",
+    "hide_sidebar": "Hide Sidebar",
+    "show_sidebar": "Show Sidebar",
     "open": "Open",
     "quit": "Quit"
   }

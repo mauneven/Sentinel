@@ -54,6 +54,10 @@
     "create": "Crear",
     "info_title": "Acerca de Sentinel",
     "info_message": "Sentinel te ayuda a proteger tu enfoque y salud con recordatorios simples de descanso mientras trabajas.",
+    "next_reminders": "Próximos recordatorios",
+    "less_than": "Menos de",
+    "hide_sidebar": "Ocultar barra lateral",
+    "show_sidebar": "Mostrar barra lateral",
     "open": "Abrir",
     "quit": "Salir"
   }

@@ -1,5 +1,11 @@
 import Foundation
 
+struct UpcomingReminderInfo: Identifiable {
+    let id: UUID
+    let title: String
+    let minutesLeft: Int
+}
+
 @Observable
 class ReminderManager {
     var reminders: [Reminder] = []
@@ -15,6 +21,7 @@ class ReminderManager {
     }
 
     private var timers: [UUID: Timer] = [:]
+    private var nextFireDates: [UUID: Date] = [:]
     private let notificationService = NotificationService()
     let persistenceService: PersistenceService
     let localizationService: LocalizationService
@@ -23,6 +30,34 @@ class ReminderManager {
     var activeTimerCount: Int { timers.count }
     func hasTimer(for id: UUID) -> Bool { timers[id] != nil }
     #endif
+
+    var upcomingReminders: [UpcomingReminderInfo] {
+        guard isMasterEnabled else { return [] }
+
+        let now = Date()
+        let enabledWithDates: [(reminder: Reminder, date: Date)] = reminders
+            .filter { $0.isEnabled }
+            .compactMap { reminder in
+                guard let date = nextFireDates[reminder.id] else { return nil }
+                return (reminder, date)
+            }
+            .sorted { $0.date < $1.date }
+
+        guard let first = enabledWithDates.first else { return [] }
+        let threshold = first.date.addingTimeInterval(180)
+
+        return enabledWithDates
+            .filter { $0.date <= threshold }
+            .prefix(3)
+            .map { item in
+                let minutes = max(1, Int(ceil(item.date.timeIntervalSince(now) / 60)))
+                return UpcomingReminderInfo(
+                    id: item.reminder.id,
+                    title: item.reminder.title,
+                    minutesLeft: minutes
+                )
+            }
+    }
 
     init(persistenceService: PersistenceService = PersistenceService(),
          localizationService: LocalizationService? = nil) {
@@ -117,6 +152,7 @@ class ReminderManager {
         stopTimer(for: reminder.id)
 
         let interval = TimeInterval(reminder.intervalMinutes * 60)
+        nextFireDates[reminder.id] = Date().addingTimeInterval(interval)
         let reminderId = reminder.id
         let timer = Timer.scheduledTimer(
             withTimeInterval: interval,
@@ -130,6 +166,7 @@ class ReminderManager {
     private func stopTimer(for id: UUID) {
         timers[id]?.invalidate()
         timers[id] = nil
+        nextFireDates[id] = nil
     }
 
     private func restartTimer(for reminder: Reminder) {
@@ -147,6 +184,7 @@ class ReminderManager {
             timer.invalidate()
         }
         timers.removeAll()
+        nextFireDates.removeAll()
     }
 
     private func timerFired(for id: UUID) {
@@ -157,6 +195,9 @@ class ReminderManager {
             body: reminder.description,
             identifier: notificationId
         )
+
+        let interval = TimeInterval(reminder.intervalMinutes * 60)
+        nextFireDates[id] = Date().addingTimeInterval(interval)
     }
 
     // MARK: - Persistence

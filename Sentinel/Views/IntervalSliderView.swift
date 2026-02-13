@@ -8,7 +8,7 @@ struct IntervalSliderView: View {
     let isEnabled: Bool
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 6) {
             HStack {
                 Text("\(range.lowerBound) \(minuteLabel)")
                 Spacer()
@@ -23,6 +23,10 @@ struct IntervalSliderView: View {
                 let width = max(geometry.size.width, 1)
 
                 ZStack(alignment: .topLeading) {
+                    TickMarksView(width: width, range: range)
+                        .frame(height: 10)
+                        .offset(y: 8)
+
                     NativeSliderRepresentable(value: $value, range: range, isEnabled: isEnabled)
                         .frame(height: 18)
 
@@ -30,10 +34,10 @@ struct IntervalSliderView: View {
                         .font(.caption)
                         .monospacedDigit()
                         .foregroundStyle(.secondary)
-                        .position(x: min(max(thumbX(in: width), 16), width - 16), y: 28)
+                        .position(x: min(max(thumbX(in: width), 16), width - 16), y: 32)
                 }
             }
-            .frame(height: 34)
+            .frame(height: 38)
         }
         .opacity(isEnabled ? 1 : 0.6)
     }
@@ -45,6 +49,49 @@ struct IntervalSliderView: View {
         let clamped = min(max(value, minValue), maxValue)
         let percent = (clamped - minValue) / (maxValue - minValue)
         return CGFloat(percent) * width
+    }
+}
+
+private struct TickMarksView: View {
+    let width: CGFloat
+    let range: ClosedRange<Int>
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            ForEach(tickValues, id: \.self) { mark in
+                Rectangle()
+                    .fill(.white.opacity(0.35))
+                    .frame(width: 1, height: isMajor(mark) ? 8 : 4)
+                    .offset(x: x(for: mark), y: 0)
+            }
+        }
+    }
+
+    private var tickValues: [Int] {
+        var values = [range.lowerBound]
+        var current = 5
+        while current <= range.upperBound {
+            if current != range.lowerBound {
+                values.append(current)
+            }
+            current += 5
+        }
+        if !values.contains(range.upperBound) {
+            values.append(range.upperBound)
+        }
+        return values.sorted()
+    }
+
+    private func isMajor(_ value: Int) -> Bool {
+        value == range.lowerBound || value % 10 == 0 || value == range.upperBound
+    }
+
+    private func x(for value: Int) -> CGFloat {
+        let minValue = CGFloat(range.lowerBound)
+        let maxValue = CGFloat(range.upperBound)
+        guard maxValue > minValue else { return 0 }
+        let clamped = min(max(CGFloat(value), minValue), maxValue)
+        return ((clamped - minValue) / (maxValue - minValue)) * width
     }
 }
 

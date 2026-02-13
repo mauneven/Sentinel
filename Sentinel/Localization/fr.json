@@ -54,6 +54,10 @@
     "create": "Créer",
     "info_title": "À propos de Sentinel",
     "info_message": "Sentinel t'aide à protéger ton focus et ta santé avec des rappels de pause simples pendant le travail.",
+    "next_reminders": "Prochains rappels",
+    "less_than": "Moins de",
+    "hide_sidebar": "Masquer la barre latérale",
+    "show_sidebar": "Afficher la barre latérale",
     "open": "Ouvrir",
     "quit": "Quitter"
   }

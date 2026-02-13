@@ -9,7 +9,6 @@ struct EditReminderView: View {
     @State private var editedTitle: String
     @State private var editedDescription: String
     @State private var editedInterval: Double
-    private let sliderMarks = [1, 10, 20, 30, 40, 50, 60]
 
     init(reminder: Reminder, isCreating: Bool = false) {
         self.originalReminder = reminder
@@ -47,15 +46,12 @@ struct EditReminderView: View {
                 .lineLimit(3...5)
                 .textFieldStyle(.roundedBorder)
 
-            HStack {
-                Text(reminderManager.localizationService.ui("interval") + ":")
-                IntervalSliderView(
-                    value: $editedInterval,
-                    range: 1...60,
-                    minuteLabel: reminderManager.localizationService.ui("minutes"),
-                    isEnabled: true
-                )
-            }
+            IntervalSliderView(
+                value: $editedInterval,
+                range: 1...60,
+                minuteLabel: reminderManager.localizationService.ui("minutes"),
+                isEnabled: true
+            )
 
             Spacer()
 

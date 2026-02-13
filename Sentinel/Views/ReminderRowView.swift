@@ -21,6 +21,10 @@ struct ReminderRowView: View {
         self._sliderValue = State(initialValue: Double(min(max(reminder.intervalMinutes, 1), 60)))
     }
 
+    private var displayEnabledState: Bool {
+        isMasterEnabled && reminder.isEnabled
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
@@ -28,15 +32,20 @@ struct ReminderRowView: View {
                     .font(.system(size: 17, weight: .semibold))
                     .lineLimit(1)
                     .truncationMode(.tail)
+                    .foregroundStyle(isMasterEnabled ? .primary : .secondary)
 
                 Toggle("", isOn: Binding(
-                    get: { reminder.isEnabled },
-                    set: { _ in onToggle() }
+                    get: { displayEnabledState },
+                    set: { _ in
+                        guard isMasterEnabled else { return }
+                        onToggle()
+                    }
                 ))
                 .toggleStyle(.switch)
                 .labelsHidden()
                 .tint(.blue)
                 .disabled(!isMasterEnabled)
+                .animation(.easeInOut(duration: 0.2), value: isMasterEnabled)
 
                 Button(action: onEdit) {
                     Image(systemName: "pencil")
@@ -75,6 +84,5 @@ struct ReminderRowView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(.white.opacity(0.12), lineWidth: 1)
         )
-        .opacity(isMasterEnabled ? 1.0 : 0.5)
     }
 }

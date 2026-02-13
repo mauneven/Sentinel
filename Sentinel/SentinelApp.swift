@@ -26,6 +26,7 @@ struct SentinelApp: App {
         }
         .windowResizability(.automatic)
         .windowStyle(.hiddenTitleBar)
+        .windowToolbarStyle(.unifiedCompact)
 
         MenuBarExtra(reminderManager.localizationService.ui("sentinel"), systemImage: "shield") {
             Button(reminderManager.localizationService.ui("open")) {
