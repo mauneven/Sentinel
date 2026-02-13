@@ -20,7 +20,6 @@ struct ContentView: View {
     @State private var creatingReminder: Reminder?
     @State private var showSettings = false
     @State private var showInfo = false
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var searchText = ""
 
     private var filteredReminders: [Reminder] {
@@ -40,7 +39,7 @@ struct ContentView: View {
             MacOSBlurBackground()
                 .ignoresSafeArea()
 
-            NavigationSplitView(columnVisibility: $columnVisibility) {
+            NavigationSplitView {
                 VStack(alignment: .leading, spacing: 14) {
                     HStack(spacing: 12) {
                         Text(reminderManager.localizationService.ui("sentinel"))
@@ -67,7 +66,7 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 2)
 
-                    UpcomingReminderBarView(items: reminderManager.upcomingReminders)
+                    UpcomingReminderBarView()
                         .environment(reminderManager)
 
                     Spacer(minLength: 12)
@@ -126,7 +125,7 @@ struct ContentView: View {
                                 )
                             }
                         }
-                        .padding(.top, 14)
+                        .padding(.top, 12)
                         .padding(.bottom, 24)
                         .padding(.horizontal, 20)
                     }
@@ -137,22 +136,15 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .navigationSplitViewStyle(.automatic)
-
-            if showInfo {
-                InfoPopupView(
-                    title: reminderManager.localizationService.ui("info_title"),
-                    message: reminderManager.localizationService.ui("info_message"),
-                    buttonTitle: reminderManager.localizationService.ui("done"),
-                    onClose: { showInfo = false }
-                )
-                .transition(.scale.combined(with: .opacity))
-                .zIndex(1)
-            }
         }
         .animation(.easeInOut(duration: 0.2), value: showInfo)
-        .animation(.easeInOut(duration: 0.24), value: columnVisibility)
         .frame(minWidth: 860, minHeight: 600)
         .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
+        .alert(reminderManager.localizationService.ui("info_title"), isPresented: $showInfo) {
+            Button(reminderManager.localizationService.ui("done"), role: .cancel) {}
+        } message: {
+            Text(reminderManager.localizationService.ui("info_message"))
+        }
         .sheet(isPresented: $showSettings) {
             SettingsView()
                 .environment(reminderManager)
@@ -166,36 +158,5 @@ struct ContentView: View {
             EditReminderView(reminder: reminder, isCreating: true)
                 .environment(reminderManager)
         }
-    }
-}
-
-private struct InfoPopupView: View {
-    let title: String
-    let message: String
-    let buttonTitle: String
-    let onClose: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(title)
-                .font(.title3.weight(.semibold))
-
-            Text(message)
-                .font(.body)
-                .foregroundStyle(.secondary)
-
-            HStack {
-                Spacer()
-                Button(buttonTitle, action: onClose)
-                    .buttonStyle(.borderedProminent)
-            }
-        }
-        .padding(18)
-        .frame(width: 420)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(.white.opacity(0.18), lineWidth: 1)
-        )
     }
 }

@@ -27,13 +27,48 @@ struct ReminderRowView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 10) {
+                    Text(reminder.title)
+                        .font(.system(size: 17, weight: .semibold))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .foregroundStyle(isMasterEnabled ? .primary : .secondary)
+
+                    Spacer(minLength: 110)
+                }
+
+                IntervalSliderView(
+                    value: $sliderValue,
+                    range: 1...60,
+                    minuteLabel: reminderManager.localizationService.ui("minutes"),
+                    isEnabled: isMasterEnabled
+                )
+                .onChange(of: sliderValue) { _, newValue in
+                    let clamped = min(max(Int(newValue.rounded()), 1), 60)
+                    onIntervalChange(clamped)
+                }
+                .onChange(of: reminder.intervalMinutes) { _, newValue in
+                    let clamped = min(max(newValue, 1), 60)
+                    if Int(sliderValue.rounded()) != clamped {
+                        sliderValue = Double(clamped)
+                    }
+                }
+            }
+
             HStack(spacing: 10) {
-                Text(reminder.title)
-                    .font(.system(size: 17, weight: .semibold))
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .foregroundStyle(isMasterEnabled ? .primary : .secondary)
+                Button(action: onEdit) {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 14, weight: .semibold))
+                        .frame(width: 28, height: 28)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(.white.opacity(0.22), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
 
                 Toggle("", isOn: Binding(
                     get: { displayEnabledState },
@@ -52,36 +87,8 @@ struct ReminderRowView: View {
                 .tint(.blue)
                 .animation(.easeInOut(duration: 0.2), value: isMasterEnabled)
                 .modifier(WiggleEffect(progress: wigglePhase))
-
-                Button(action: onEdit) {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 14, weight: .semibold))
-                        .frame(width: 28, height: 28)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .stroke(.white.opacity(0.22), lineWidth: 1)
-                        )
-                }
-                .buttonStyle(.plain)
             }
-
-            IntervalSliderView(
-                value: $sliderValue,
-                range: 1...60,
-                minuteLabel: reminderManager.localizationService.ui("minutes"),
-                isEnabled: isMasterEnabled
-            )
-            .onChange(of: sliderValue) { _, newValue in
-                let clamped = min(max(Int(newValue.rounded()), 1), 60)
-                onIntervalChange(clamped)
-            }
-            .onChange(of: reminder.intervalMinutes) { _, newValue in
-                let clamped = min(max(newValue, 1), 60)
-                if Int(sliderValue.rounded()) != clamped {
-                    sliderValue = Double(clamped)
-                }
-            }
+            .padding(.top, 2)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 14)

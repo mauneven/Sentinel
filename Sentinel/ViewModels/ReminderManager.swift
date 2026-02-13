@@ -48,7 +48,7 @@ class ReminderManager {
 
         return enabledWithDates
             .filter { $0.date <= threshold }
-            .prefix(3)
+            .prefix(6)
             .map { item in
                 let minutes = max(1, Int(ceil(item.date.timeIntervalSince(now) / 60)))
                 return UpcomingReminderInfo(
@@ -79,7 +79,7 @@ class ReminderManager {
             isEnabled: false,
             type: .custom
         )
-        reminders.append(reminder)
+        reminders.insert(reminder, at: 0)
         save()
         return reminder
     }
