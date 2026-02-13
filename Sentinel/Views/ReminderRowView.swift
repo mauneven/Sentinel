@@ -10,6 +10,7 @@ struct ReminderRowView: View {
     let isMasterEnabled: Bool
 
     @State private var sliderValue: Double
+    @State private var wigglePhase: CGFloat = 0
 
     init(reminder: Reminder, onEdit: @escaping () -> Void, onToggle: @escaping () -> Void,
          onIntervalChange: @escaping (Int) -> Void, isMasterEnabled: Bool) {
@@ -37,15 +38,20 @@ struct ReminderRowView: View {
                 Toggle("", isOn: Binding(
                     get: { displayEnabledState },
                     set: { _ in
-                        guard isMasterEnabled else { return }
+                        guard isMasterEnabled else {
+                            withAnimation(.easeInOut(duration: 0.42)) {
+                                wigglePhase += 1
+                            }
+                            return
+                        }
                         onToggle()
                     }
                 ))
                 .toggleStyle(.switch)
                 .labelsHidden()
                 .tint(.blue)
-                .disabled(!isMasterEnabled)
                 .animation(.easeInOut(duration: 0.2), value: isMasterEnabled)
+                .modifier(WiggleEffect(progress: wigglePhase))
 
                 Button(action: onEdit) {
                     Image(systemName: "pencil")
@@ -82,7 +88,22 @@ struct ReminderRowView: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(.white.opacity(0.12), lineWidth: 1)
+                .stroke(.white.opacity(0.2), lineWidth: 1)
         )
+    }
+}
+
+private struct WiggleEffect: GeometryEffect {
+    var progress: CGFloat
+
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        let amplitude: CGFloat = 4
+        let translation = amplitude * sin(progress * .pi * 6)
+        return ProjectionTransform(CGAffineTransform(translationX: translation, y: 0))
     }
 }

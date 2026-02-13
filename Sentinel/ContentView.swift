@@ -21,6 +21,19 @@ struct ContentView: View {
     @State private var showSettings = false
     @State private var showInfo = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var searchText = ""
+
+    private var filteredReminders: [Reminder] {
+        guard !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return reminderManager.reminders
+        }
+
+        let query = searchText.lowercased()
+        return reminderManager.reminders.filter { reminder in
+            reminder.title.lowercased().contains(query) ||
+            reminder.description.lowercased().contains(query)
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -53,6 +66,9 @@ struct ContentView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 2)
+
+                    UpcomingReminderBarView(items: reminderManager.upcomingReminders)
+                        .environment(reminderManager)
 
                     Spacer(minLength: 12)
 
@@ -89,20 +105,14 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 14)
                 .padding(.bottom, 16)
-                .padding(.top, 34)
+                .padding(.top, 14)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .navigationSplitViewColumnWidth(min: 280, ideal: 295, max: 320)
             } detail: {
-                VStack(spacing: 10) {
-                    if !reminderManager.upcomingReminders.isEmpty {
-                        UpcomingReminderBarView(items: reminderManager.upcomingReminders)
-                            .environment(reminderManager)
-                            .frame(maxWidth: .infinity, alignment: .topLeading)
-                    }
-
+                VStack(spacing: 0) {
                     ScrollView(.vertical, showsIndicators: true) {
                         LazyVStack(spacing: 14) {
-                            ForEach(reminderManager.reminders) { reminder in
+                            ForEach(filteredReminders) { reminder in
                                 ReminderRowView(
                                     reminder: reminder,
                                     onEdit: { editingReminder = reminder },
@@ -116,18 +126,17 @@ struct ContentView: View {
                                 )
                             }
                         }
-                        .padding(.top, 6)
+                        .padding(.top, 14)
                         .padding(.bottom, 24)
-                        .padding(.leading, 4)
+                        .padding(.horizontal, 20)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollIndicators(.visible)
                 }
-                .padding(.top, 8)
-                .padding(.horizontal, 12)
+                .padding(.top, 0)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .navigationSplitViewStyle(.balanced)
+            .navigationSplitViewStyle(.automatic)
 
             if showInfo {
                 InfoPopupView(
@@ -141,7 +150,9 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: showInfo)
+        .animation(.easeInOut(duration: 0.24), value: columnVisibility)
         .frame(minWidth: 860, minHeight: 600)
+        .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
         .sheet(isPresented: $showSettings) {
             SettingsView()
                 .environment(reminderManager)
