@@ -1,0 +1,52 @@
+{
+  "reminders": {
+    "relax_eyes": {
+      "title": "Repose tes yeux",
+      "description": "Regarde loin de ton écran et fixe un objet distant pendant 20 secondes"
+    },
+    "check_fingers": {
+      "title": "Vérifie tes doigts",
+      "description": "Étire et remue tes doigts pour éviter la tension et la fatigue"
+    },
+    "relax_arms": {
+      "title": "Détends tes bras",
+      "description": "Laisse tomber tes bras le long du corps et secoue-les doucement"
+    },
+    "stretch_legs": {
+      "title": "Étire tes jambes",
+      "description": "Lève-toi et fais quelques pas pour améliorer la circulation"
+    },
+    "fix_posture": {
+      "title": "Corrige ta posture",
+      "description": "Assieds-toi droit, aligne ton dos et détends tes épaules"
+    },
+    "have_water": {
+      "title": "Bois un peu d'eau",
+      "description": "Prends une gorgée d'eau pour rester hydraté"
+    },
+    "breathe": {
+      "title": "Respire quelques secondes",
+      "description": "Prends 3 respirations profondes, inspire par le nez et expire lentement"
+    }
+  },
+  "ui": {
+    "settings": "Paramètres",
+    "add_reminder": "Ajouter un rappel",
+    "delete": "Supprimer",
+    "close": "Fermer",
+    "update": "Mettre à jour",
+    "language": "Langue",
+    "launch_at_login": "Lancer au démarrage",
+    "start_minimized": "Démarrer minimisé",
+    "minutes": "min",
+    "title_placeholder": "Titre du rappel",
+    "description_placeholder": "Description du rappel",
+    "edit_reminder": "Modifier le rappel",
+    "new_reminder": "Nouveau rappel",
+    "enabled": "Activé",
+    "sentinel": "Sentinel",
+    "done": "Terminé",
+    "interval": "Intervalle",
+    "create": "Créer"
+  }
+}

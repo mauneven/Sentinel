@@ -1,0 +1,52 @@
+{
+  "reminders": {
+    "relax_eyes": {
+      "title": "Relax your eyes",
+      "description": "Look away from your screen and focus on a distant object for 20 seconds"
+    },
+    "check_fingers": {
+      "title": "Check your fingers",
+      "description": "Stretch and wiggle your fingers to prevent tension and strain"
+    },
+    "relax_arms": {
+      "title": "Relax your arms",
+      "description": "Drop your arms to your sides and shake them gently"
+    },
+    "stretch_legs": {
+      "title": "Stretch your legs",
+      "description": "Stand up and take a few steps to improve circulation"
+    },
+    "fix_posture": {
+      "title": "Fix your posture",
+      "description": "Sit up straight, align your back, and relax your shoulders"
+    },
+    "have_water": {
+      "title": "Have some water",
+      "description": "Take a sip of water to stay hydrated"
+    },
+    "breathe": {
+      "title": "Breathe for a moment",
+      "description": "Take 3 deep breaths, inhaling through your nose and exhaling slowly"
+    }
+  },
+  "ui": {
+    "settings": "Settings",
+    "add_reminder": "Add Reminder",
+    "delete": "Delete",
+    "close": "Close",
+    "update": "Update",
+    "language": "Language",
+    "launch_at_login": "Launch at Login",
+    "start_minimized": "Start Minimized",
+    "minutes": "min",
+    "title_placeholder": "Reminder title",
+    "description_placeholder": "Reminder description",
+    "edit_reminder": "Edit Reminder",
+    "new_reminder": "New Reminder",
+    "enabled": "Enabled",
+    "sentinel": "Sentinel",
+    "done": "Done",
+    "interval": "Interval",
+    "create": "Create"
+  }
+}

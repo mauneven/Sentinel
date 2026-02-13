@@ -1,0 +1,52 @@
+{
+  "reminders": {
+    "relax_eyes": {
+      "title": "Relaja tus ojos",
+      "description": "Mira lejos de tu pantalla y enfoca un objeto distante por 20 segundos"
+    },
+    "check_fingers": {
+      "title": "Revisa tus dedos",
+      "description": "Estira y mueve tus dedos para prevenir la tensión y el cansancio"
+    },
+    "relax_arms": {
+      "title": "Relaja tus brazos",
+      "description": "Deja caer tus brazos a los lados y sacúdelos suavemente"
+    },
+    "stretch_legs": {
+      "title": "Estira tus piernas",
+      "description": "Levántate y camina unos pasos para mejorar la circulación"
+    },
+    "fix_posture": {
+      "title": "Corrige tu postura",
+      "description": "Siéntate derecho, alinea tu espalda y relaja tus hombros"
+    },
+    "have_water": {
+      "title": "Toma un poco de agua",
+      "description": "Toma un sorbo de agua para mantenerte hidratado"
+    },
+    "breathe": {
+      "title": "Respira unos segundos",
+      "description": "Toma 3 respiraciones profundas, inhala por la nariz y exhala lentamente"
+    }
+  },
+  "ui": {
+    "settings": "Configuración",
+    "add_reminder": "Agregar Recordatorio",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "update": "Actualizar",
+    "language": "Idioma",
+    "launch_at_login": "Iniciar al encender",
+    "start_minimized": "Iniciar minimizado",
+    "minutes": "min",
+    "title_placeholder": "Título del recordatorio",
+    "description_placeholder": "Descripción del recordatorio",
+    "edit_reminder": "Editar Recordatorio",
+    "new_reminder": "Nuevo Recordatorio",
+    "enabled": "Activado",
+    "sentinel": "Sentinel",
+    "done": "Listo",
+    "interval": "Intervalo",
+    "create": "Crear"
+  }
+}
