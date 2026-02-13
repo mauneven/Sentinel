@@ -137,9 +137,26 @@ struct ContentView: View {
             }
             .navigationSplitViewStyle(.automatic)
         }
-        .animation(.easeInOut(duration: 0.2), value: showInfo)
+        // Avoid broad root-level animations to prevent layout stutter
         .frame(minWidth: 860, minHeight: 600)
-        .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                HStack {
+                    Spacer()
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundStyle(.secondary)
+                        TextField("Search", text: $searchText)
+                            .textFieldStyle(.plain)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .frame(minWidth: 400, maxWidth: 450)
+                    Spacer()
+                }
+            }
+        }
         .alert(reminderManager.localizationService.ui("info_title"), isPresented: $showInfo) {
             Button(reminderManager.localizationService.ui("done"), role: .cancel) {}
         } message: {
@@ -160,3 +177,4 @@ struct ContentView: View {
         }
     }
 }
+
