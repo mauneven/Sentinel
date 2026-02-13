@@ -59,6 +59,7 @@ class ReminderManager {
         guard let index = reminders.firstIndex(where: { $0.id == updated.id }) else { return }
         let old = reminders[index]
         var newReminder = updated
+        newReminder.intervalMinutes = min(max(newReminder.intervalMinutes, 1), 60)
 
         if updated.type == .default &&
             (old.title != updated.title || old.description != updated.description) {
@@ -162,7 +163,11 @@ class ReminderManager {
 
     private func loadState() {
         if let saved = persistenceService.loadReminders() {
-            reminders = saved
+            reminders = saved.map { reminder in
+                var normalized = reminder
+                normalized.intervalMinutes = min(max(normalized.intervalMinutes, 1), 60)
+                return normalized
+            }
         } else {
             createDefaultReminders()
         }

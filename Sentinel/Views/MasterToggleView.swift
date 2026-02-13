@@ -1,4 +1,29 @@
 import SwiftUI
+import AppKit
+
+struct WindowControlButtons: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Button(action: {
+                AppWindowController.shared.closeToTray()
+            }) {
+                Circle()
+                    .fill(Color(nsColor: .systemRed))
+                    .frame(width: 12, height: 12)
+            }
+            .buttonStyle(.plain)
+
+            Button(action: {
+                AppWindowController.shared.minimizeMainWindow()
+            }) {
+                Circle()
+                    .fill(Color(nsColor: .systemYellow))
+                    .frame(width: 12, height: 12)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+}
 
 struct MasterToggleView: View {
     @Environment(ReminderManager.self) private var reminderManager
@@ -6,9 +31,13 @@ struct MasterToggleView: View {
 
     var body: some View {
         HStack {
-            Text("Sentinel")
-                .font(.title2)
-                .fontWeight(.bold)
+            HStack(spacing: 10) {
+                WindowControlButtons()
+
+                Text(reminderManager.localizationService.ui("sentinel"))
+                    .font(.title2)
+                    .fontWeight(.bold)
+            }
 
             Spacer()
 

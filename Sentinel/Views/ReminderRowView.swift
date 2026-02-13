@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ReminderRowView: View {
+    @Environment(ReminderManager.self) private var reminderManager
+
     let reminder: Reminder
     let onEdit: () -> Void
     let onToggle: () -> Void
@@ -16,7 +18,7 @@ struct ReminderRowView: View {
         self.onToggle = onToggle
         self.onIntervalChange = onIntervalChange
         self.isMasterEnabled = isMasterEnabled
-        self._sliderValue = State(initialValue: Double(reminder.intervalMinutes))
+        self._sliderValue = State(initialValue: Double(min(max(reminder.intervalMinutes, 1), 60)))
     }
 
     var body: some View {
@@ -37,16 +39,23 @@ struct ReminderRowView: View {
                 .buttonStyle(.plain)
 
                 HStack(spacing: 8) {
-                    Slider(value: $sliderValue, in: 1...120, step: 1)
+                    IntervalSliderView(value: $sliderValue, range: 1...60, tickStep: 10)
                         .onChange(of: sliderValue) { _, newValue in
-                            onIntervalChange(Int(newValue))
+                            let clamped = min(max(Int(newValue.rounded()), 1), 60)
+                            onIntervalChange(clamped)
+                        }
+                        .onChange(of: reminder.intervalMinutes) { _, newValue in
+                            let clamped = min(max(newValue, 1), 60)
+                            if Int(sliderValue.rounded()) != clamped {
+                                sliderValue = Double(clamped)
+                            }
                         }
                         .disabled(!isMasterEnabled)
-                    Text("\(Int(sliderValue)) min")
+                    Text("\(Int(sliderValue.rounded())) \(reminderManager.localizationService.ui("minutes"))")
                         .font(.callout)
                         .monospacedDigit()
                         .foregroundStyle(.secondary)
-                        .frame(width: 50, alignment: .trailing)
+                        .frame(width: 58, alignment: .trailing)
                 }
             }
 

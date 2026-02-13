@@ -47,6 +47,8 @@
     "sentinel": "Sentinel",
     "done": "Listo",
     "interval": "Intervalo",
-    "create": "Crear"
+    "create": "Crear",
+    "open": "Abrir",
+    "quit": "Salir"
   }
 }

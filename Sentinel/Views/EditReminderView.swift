@@ -15,7 +15,7 @@ struct EditReminderView: View {
         self.isCreating = isCreating
         self._editedTitle = State(initialValue: isCreating ? "" : reminder.title)
         self._editedDescription = State(initialValue: isCreating ? "" : reminder.description)
-        self._editedInterval = State(initialValue: Double(reminder.intervalMinutes))
+        self._editedInterval = State(initialValue: Double(min(max(reminder.intervalMinutes, 1), 60)))
     }
 
     private var hasChanges: Bool {
@@ -24,7 +24,7 @@ struct EditReminderView: View {
         }
         return editedTitle != originalReminder.title ||
             editedDescription != originalReminder.description ||
-            Int(editedInterval) != originalReminder.intervalMinutes
+            min(max(Int(editedInterval.rounded()), 1), 60) != originalReminder.intervalMinutes
     }
 
     var body: some View {
@@ -48,10 +48,10 @@ struct EditReminderView: View {
 
             HStack {
                 Text(reminderManager.localizationService.ui("interval") + ":")
-                Slider(value: $editedInterval, in: 1...120, step: 1)
-                Text("\(Int(editedInterval)) min")
+                IntervalSliderView(value: $editedInterval, range: 1...60, tickStep: 10)
+                Text("\(Int(editedInterval.rounded())) \(reminderManager.localizationService.ui("minutes"))")
                     .monospacedDigit()
-                    .frame(width: 55, alignment: .trailing)
+                    .frame(width: 62, alignment: .trailing)
             }
 
             Spacer()
@@ -90,13 +90,13 @@ struct EditReminderView: View {
                         var newReminder = originalReminder
                         newReminder.title = editedTitle.trimmingCharacters(in: .whitespaces)
                         newReminder.description = editedDescription
-                        newReminder.intervalMinutes = Int(editedInterval)
+                        newReminder.intervalMinutes = min(max(Int(editedInterval.rounded()), 1), 60)
                         reminderManager.updateReminder(newReminder)
                     } else if hasChanges {
                         var updated = originalReminder
                         updated.title = editedTitle
                         updated.description = editedDescription
-                        updated.intervalMinutes = Int(editedInterval)
+                        updated.intervalMinutes = min(max(Int(editedInterval.rounded()), 1), 60)
                         reminderManager.updateReminder(updated)
                     }
                     dismiss()
