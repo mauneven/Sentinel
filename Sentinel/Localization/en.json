@@ -31,9 +31,12 @@
   },
   "ui": {
     "settings": "Settings",
+    "sentinel_description": "Protect your focus with gentle reminders.",
     "add_reminder": "Add Reminder",
+    "add": "Add",
     "delete": "Delete",
     "close": "Close",
+    "cancel": "Cancel",
     "update": "Update",
     "language": "Language",
     "launch_at_login": "Launch at Login",

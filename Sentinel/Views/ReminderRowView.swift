@@ -8,6 +8,7 @@ struct ReminderRowView: View {
     let onToggle: () -> Void
     let onIntervalChange: (Int) -> Void
     let isMasterEnabled: Bool
+    private let sliderMarks = [1, 10, 20, 30, 40, 50, 60]
 
     @State private var sliderValue: Double
 
@@ -22,7 +23,7 @@ struct ReminderRowView: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 14) {
             VStack(alignment: .leading, spacing: 6) {
                 Button(action: onEdit) {
                     HStack(spacing: 6) {
@@ -38,24 +39,22 @@ struct ReminderRowView: View {
                 }
                 .buttonStyle(.plain)
 
-                HStack(spacing: 8) {
-                    IntervalSliderView(value: $sliderValue, range: 1...60, tickStep: 10)
-                        .onChange(of: sliderValue) { _, newValue in
-                            let clamped = min(max(Int(newValue.rounded()), 1), 60)
-                            onIntervalChange(clamped)
-                        }
-                        .onChange(of: reminder.intervalMinutes) { _, newValue in
-                            let clamped = min(max(newValue, 1), 60)
-                            if Int(sliderValue.rounded()) != clamped {
-                                sliderValue = Double(clamped)
-                            }
-                        }
-                        .disabled(!isMasterEnabled)
-                    Text("\(Int(sliderValue.rounded())) \(reminderManager.localizationService.ui("minutes"))")
-                        .font(.callout)
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
-                        .frame(width: 58, alignment: .trailing)
+                IntervalSliderView(
+                    value: $sliderValue,
+                    range: 1...60,
+                    marks: sliderMarks,
+                    minuteLabel: reminderManager.localizationService.ui("minutes"),
+                    isEnabled: isMasterEnabled
+                )
+                .onChange(of: sliderValue) { _, newValue in
+                    let clamped = min(max(Int(newValue.rounded()), 1), 60)
+                    onIntervalChange(clamped)
+                }
+                .onChange(of: reminder.intervalMinutes) { _, newValue in
+                    let clamped = min(max(newValue, 1), 60)
+                    if Int(sliderValue.rounded()) != clamped {
+                        sliderValue = Double(clamped)
+                    }
                 }
             }
 
@@ -68,8 +67,13 @@ struct ReminderRowView: View {
             .tint(.blue)
             .disabled(!isMasterEnabled)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 14)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(.white.opacity(0.12), lineWidth: 1)
+        )
         .opacity(isMasterEnabled ? 1.0 : 0.5)
     }
 }

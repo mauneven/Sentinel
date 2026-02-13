@@ -31,9 +31,12 @@
   },
   "ui": {
     "settings": "Configuración",
+    "sentinel_description": "Protege tu enfoque con recordatorios suaves.",
     "add_reminder": "Agregar Recordatorio",
+    "add": "Agregar",
     "delete": "Eliminar",
     "close": "Cerrar",
+    "cancel": "Cancelar",
     "update": "Actualizar",
     "language": "Idioma",
     "launch_at_login": "Iniciar al encender",

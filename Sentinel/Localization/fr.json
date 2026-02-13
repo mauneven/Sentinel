@@ -31,9 +31,12 @@
   },
   "ui": {
     "settings": "Paramètres",
+    "sentinel_description": "Protège ton focus avec des rappels doux.",
     "add_reminder": "Ajouter un rappel",
+    "add": "Ajouter",
     "delete": "Supprimer",
     "close": "Fermer",
+    "cancel": "Annuler",
     "update": "Mettre à jour",
     "language": "Langue",
     "launch_at_login": "Lancer au démarrage",

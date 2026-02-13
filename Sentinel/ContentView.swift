@@ -25,16 +25,66 @@ struct ContentView: View {
             MacOSBlurBackground()
                 .ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                MasterToggleView(showSettings: $showSettings)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 12)
-                    .padding(.bottom, 10)
+            HStack(alignment: .top, spacing: 20) {
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(spacing: 12) {
+                        Text(reminderManager.localizationService.ui("sentinel"))
+                            .font(.system(size: 34, weight: .bold, design: .default))
 
-                Divider()
+                        Spacer(minLength: 8)
+
+                        @Bindable var manager = reminderManager
+                        Toggle("", isOn: $manager.isMasterEnabled)
+                            .toggleStyle(.switch)
+                            .labelsHidden()
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(.white.opacity(0.18), lineWidth: 1)
+                    )
+
+                    Text(reminderManager.localizationService.ui("sentinel_description"))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 4)
+                        .padding(.bottom, 2)
+
+                    Button(action: {
+                        let newReminder = reminderManager.addReminder()
+                        creatingReminder = newReminder
+                    }) {
+                        Label(reminderManager.localizationService.ui("add"), systemImage: "plus")
+                            .font(.body.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+
+                    Button(action: {
+                        showSettings = true
+                    }) {
+                        Label(reminderManager.localizationService.ui("settings"), systemImage: "gearshape")
+                            .font(.body)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+
+                    Spacer()
+                }
+                .padding(14)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(.white.opacity(0.14), lineWidth: 1)
+                )
+                .frame(width: 260)
 
                 ScrollView {
-                    LazyVStack(spacing: 2) {
+                    LazyVStack(spacing: 14) {
                         ForEach(reminderManager.reminders) { reminder in
                             ReminderRowView(
                                 reminder: reminder,
@@ -49,28 +99,14 @@ struct ContentView: View {
                             )
                         }
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 4)
                 }
-
-                Divider()
-
-                Button(action: {
-                    let newReminder = reminderManager.addReminder()
-                    creatingReminder = newReminder
-                }) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.body)
-                        Text(reminderManager.localizationService.ui("add_reminder"))
-                            .font(.body)
-                    }
-                }
-                .buttonStyle(.plain)
-                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .padding(20)
         }
-        .frame(width: 500, height: 560)
-        .background(WindowAccessor())
+        .frame(width: 860, height: 600)
         .sheet(isPresented: $showSettings) {
             SettingsView()
                 .environment(reminderManager)
@@ -80,14 +116,7 @@ struct ContentView: View {
             EditReminderView(reminder: reminder, isCreating: false)
                 .environment(reminderManager)
         }
-        .sheet(item: $creatingReminder, onDismiss: {
-            if let r = creatingReminder,
-               let existing = reminderManager.reminders.first(where: { $0.id == r.id }),
-               existing.title == reminderManager.localizationService.ui("new_reminder"),
-               existing.description.isEmpty {
-                reminderManager.deleteReminder(existing)
-            }
-        }) { reminder in
+        .sheet(item: $creatingReminder) { reminder in
             EditReminderView(reminder: reminder, isCreating: true)
                 .environment(reminderManager)
         }

@@ -28,7 +28,7 @@ struct Reminder: Identifiable, Codable, Equatable {
         self.id = id
         self.title = title
         self.description = description
-        self.intervalMinutes = max(1, min(120, intervalMinutes))
+        self.intervalMinutes = max(1, min(60, intervalMinutes))
         self.isEnabled = isEnabled
         self.type = type
         self.isModified = isModified

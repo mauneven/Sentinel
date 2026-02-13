@@ -1,45 +1,89 @@
 import SwiftUI
-import AppKit
 
-struct IntervalSliderView: NSViewRepresentable {
+struct IntervalSliderView: View {
     @Binding var value: Double
     let range: ClosedRange<Int>
-    let tickStep: Int
+    let marks: [Int]
+    let minuteLabel: String
+    let isEnabled: Bool
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(value: $value)
-    }
+    private let trackHeight: CGFloat = 4
+    private let thumbSize: CGFloat = 14
 
-    func makeNSView(context: Context) -> NSSlider {
-        let slider = NSSlider(value: value,
-                              minValue: Double(range.lowerBound),
-                              maxValue: Double(range.upperBound),
-                              target: context.coordinator,
-                              action: #selector(Coordinator.valueChanged(_:)))
-        slider.isContinuous = true
-        slider.numberOfTickMarks = ((range.upperBound - range.lowerBound) / tickStep) + 1
-        slider.tickMarkPosition = .below
-        slider.allowsTickMarkValuesOnly = false
-        return slider
-    }
+    var body: some View {
+        VStack(spacing: 6) {
+            GeometryReader { geometry in
+                let width = max(geometry.size.width, 1)
+                let x = thumbX(in: width)
 
-    func updateNSView(_ nsView: NSSlider, context: Context) {
-        nsView.minValue = Double(range.lowerBound)
-        nsView.maxValue = Double(range.upperBound)
-        nsView.numberOfTickMarks = ((range.upperBound - range.lowerBound) / tickStep) + 1
-        nsView.tickMarkPosition = .below
-        nsView.doubleValue = min(max(value, Double(range.lowerBound)), Double(range.upperBound))
-    }
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(.white.opacity(0.18))
+                        .frame(height: trackHeight)
 
-    class Coordinator: NSObject {
-        @Binding var value: Double
+                    Capsule()
+                        .fill(isEnabled ? Color.accentColor : .secondary.opacity(0.3))
+                        .frame(width: x, height: trackHeight)
 
-        init(value: Binding<Double>) {
-            _value = value
+                    ForEach(marks, id: \.self) { mark in
+                        Circle()
+                            .fill(.white.opacity(0.5))
+                            .frame(width: 4, height: 4)
+                            .position(x: markX(mark, in: width), y: trackHeight / 2)
+                    }
+
+                    Circle()
+                        .fill(isEnabled ? Color.accentColor : .secondary)
+                        .frame(width: thumbSize, height: thumbSize)
+                        .position(x: x, y: trackHeight / 2)
+
+                    Text("\(Int(value.rounded())) \(minuteLabel)")
+                        .font(.caption)
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .position(x: min(max(x, 36), width - 36), y: 24)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { drag in
+                            guard isEnabled else { return }
+                            let clampedX = min(max(drag.location.x, 0), width)
+                            let percent = clampedX / width
+                            let rawValue = Double(range.lowerBound) + percent * Double(range.upperBound - range.lowerBound)
+                            value = min(max(rawValue.rounded(), Double(range.lowerBound)), Double(range.upperBound))
+                        }
+                )
+            }
+            .frame(height: 32)
+
+            HStack {
+                ForEach(marks, id: \.self) { mark in
+                    Text("\(mark)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                }
+            }
         }
+        .opacity(isEnabled ? 1 : 0.6)
+    }
 
-        @objc func valueChanged(_ sender: NSSlider) {
-            value = sender.doubleValue
-        }
+    private func thumbX(in width: CGFloat) -> CGFloat {
+        let minValue = Double(range.lowerBound)
+        let maxValue = Double(range.upperBound)
+        guard maxValue > minValue else { return 0 }
+        let clamped = min(max(value, minValue), maxValue)
+        let percent = (clamped - minValue) / (maxValue - minValue)
+        return CGFloat(percent) * width
+    }
+
+    private func markX(_ mark: Int, in width: CGFloat) -> CGFloat {
+        let minValue = CGFloat(range.lowerBound)
+        let maxValue = CGFloat(range.upperBound)
+        guard maxValue > minValue else { return 0 }
+        let clamped = min(max(CGFloat(mark), minValue), maxValue)
+        return ((clamped - minValue) / (maxValue - minValue)) * width
     }
 }

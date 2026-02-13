@@ -9,6 +9,7 @@ struct EditReminderView: View {
     @State private var editedTitle: String
     @State private var editedDescription: String
     @State private var editedInterval: Double
+    private let sliderMarks = [1, 10, 20, 30, 40, 50, 60]
 
     init(reminder: Reminder, isCreating: Bool = false) {
         self.originalReminder = reminder
@@ -48,10 +49,13 @@ struct EditReminderView: View {
 
             HStack {
                 Text(reminderManager.localizationService.ui("interval") + ":")
-                IntervalSliderView(value: $editedInterval, range: 1...60, tickStep: 10)
-                Text("\(Int(editedInterval.rounded())) \(reminderManager.localizationService.ui("minutes"))")
-                    .monospacedDigit()
-                    .frame(width: 62, alignment: .trailing)
+                IntervalSliderView(
+                    value: $editedInterval,
+                    range: 1...60,
+                    marks: sliderMarks,
+                    minuteLabel: reminderManager.localizationService.ui("minutes"),
+                    isEnabled: true
+                )
             }
 
             Spacer()
@@ -74,9 +78,14 @@ struct EditReminderView: View {
                 Spacer()
 
                 Button(action: {
+                    if isCreating {
+                        reminderManager.deleteReminder(originalReminder)
+                    }
                     dismiss()
                 }) {
-                    Text(reminderManager.localizationService.ui("close"))
+                    Text(isCreating
+                         ? reminderManager.localizationService.ui("cancel")
+                         : reminderManager.localizationService.ui("close"))
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(Color.gray.opacity(0.3))
