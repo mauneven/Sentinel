@@ -20,88 +20,84 @@ struct ContentView: View {
     @State private var creatingReminder: Reminder?
     @State private var showSettings = false
     @State private var showInfo = false
-    @State private var isSidebarVisible = true
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
     var body: some View {
         ZStack {
             MacOSBlurBackground()
                 .ignoresSafeArea()
 
-            HStack(alignment: .top, spacing: 16) {
-                if isSidebarVisible {
-                    VStack(alignment: .leading, spacing: 14) {
-                        HStack(spacing: 12) {
-                            Text(reminderManager.localizationService.ui("sentinel"))
-                                .font(.system(size: 34, weight: .bold, design: .default))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
+            NavigationSplitView(columnVisibility: $columnVisibility) {
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(spacing: 12) {
+                        Text(reminderManager.localizationService.ui("sentinel"))
+                            .font(.system(size: 34, weight: .bold, design: .default))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
 
-                            Spacer(minLength: 8)
+                        Spacer(minLength: 8)
 
-                            Toggle("", isOn: Binding(
-                                get: { reminderManager.isMasterEnabled },
-                                set: { newValue in
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        reminderManager.isMasterEnabled = newValue
-                                    }
+                        Toggle("", isOn: Binding(
+                            get: { reminderManager.isMasterEnabled },
+                            set: { newValue in
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    reminderManager.isMasterEnabled = newValue
                                 }
-                            ))
-                            .toggleStyle(.switch)
-                            .labelsHidden()
-                        }
-
-                        Text(reminderManager.localizationService.ui("sentinel_description"))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 2)
-
-                        Spacer()
-
-                        Button(action: {
-                            let newReminder = reminderManager.addReminder()
-                            creatingReminder = newReminder
-                        }) {
-                            Label(reminderManager.localizationService.ui("add"), systemImage: "plus")
-                                .font(.body.weight(.semibold))
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-
-                        Button(action: {
-                            showInfo = true
-                        }) {
-                            Label(reminderManager.localizationService.ui("info"), systemImage: "info.circle")
-                                .font(.body)
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.large)
-
-                        Button(action: {
-                            showSettings = true
-                        }) {
-                            Label(reminderManager.localizationService.ui("settings"), systemImage: "gearshape")
-                                .font(.body)
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.large)
+                            }
+                        ))
+                        .toggleStyle(.switch)
+                        .labelsHidden()
                     }
-                    .padding(14)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .stroke(.white.opacity(0.14), lineWidth: 1)
-                    )
-                    .frame(minWidth: 280, idealWidth: 290, maxWidth: 320)
-                    .transition(.move(edge: .leading).combined(with: .opacity))
-                }
 
+                    Text(reminderManager.localizationService.ui("sentinel_description"))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 2)
+
+                    Spacer(minLength: 12)
+
+                    Button(action: {
+                        let newReminder = reminderManager.addReminder()
+                        creatingReminder = newReminder
+                    }) {
+                        Label(reminderManager.localizationService.ui("add"), systemImage: "plus")
+                            .font(.body.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+
+                    Button(action: {
+                        showInfo = true
+                    }) {
+                        Label(reminderManager.localizationService.ui("info"), systemImage: "info.circle")
+                            .font(.body)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+
+                    Button(action: {
+                        showSettings = true
+                    }) {
+                        Label(reminderManager.localizationService.ui("settings"), systemImage: "gearshape")
+                            .font(.body)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                }
+                .padding(.horizontal, 14)
+                .padding(.bottom, 16)
+                .padding(.top, 34)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .navigationSplitViewColumnWidth(min: 280, ideal: 295, max: 320)
+            } detail: {
                 VStack(spacing: 10) {
                     if !reminderManager.upcomingReminders.isEmpty {
                         UpcomingReminderBarView(items: reminderManager.upcomingReminders)
                             .environment(reminderManager)
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
                     }
 
                     ScrollView(.vertical, showsIndicators: true) {
@@ -120,19 +116,18 @@ struct ContentView: View {
                                 )
                             }
                         }
-                        .padding(.top, 8)
+                        .padding(.top, 6)
                         .padding(.bottom, 24)
                         .padding(.leading, 4)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollIndicators(.visible)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.top, 8)
+                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .padding(.leading, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 20)
-            .padding(.trailing, 8)
+            .navigationSplitViewStyle(.balanced)
 
             if showInfo {
                 InfoPopupView(
@@ -147,20 +142,6 @@ struct ContentView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: showInfo)
         .frame(minWidth: 860, minHeight: 600)
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.22)) {
-                        isSidebarVisible.toggle()
-                    }
-                }) {
-                    Image(systemName: isSidebarVisible ? "sidebar.left" : "sidebar.right")
-                }
-                .help(isSidebarVisible
-                      ? reminderManager.localizationService.ui("hide_sidebar")
-                      : reminderManager.localizationService.ui("show_sidebar"))
-            }
-        }
         .sheet(isPresented: $showSettings) {
             SettingsView()
                 .environment(reminderManager)
