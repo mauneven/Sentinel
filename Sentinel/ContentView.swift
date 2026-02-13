@@ -19,6 +19,7 @@ struct ContentView: View {
     @State private var editingReminder: Reminder?
     @State private var creatingReminder: Reminder?
     @State private var showSettings = false
+    @State private var showInfo = false
 
     var body: some View {
         ZStack {
@@ -30,6 +31,8 @@ struct ContentView: View {
                     HStack(spacing: 12) {
                         Text(reminderManager.localizationService.ui("sentinel"))
                             .font(.system(size: 34, weight: .bold, design: .default))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
 
                         Spacer(minLength: 8)
 
@@ -52,6 +55,8 @@ struct ContentView: View {
                         .padding(.horizontal, 4)
                         .padding(.bottom, 2)
 
+                    Spacer()
+
                     Button(action: {
                         let newReminder = reminderManager.addReminder()
                         creatingReminder = newReminder
@@ -64,6 +69,16 @@ struct ContentView: View {
                     .controlSize(.large)
 
                     Button(action: {
+                        showInfo = true
+                    }) {
+                        Label(reminderManager.localizationService.ui("info"), systemImage: "info.circle")
+                            .font(.body)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+
+                    Button(action: {
                         showSettings = true
                     }) {
                         Label(reminderManager.localizationService.ui("settings"), systemImage: "gearshape")
@@ -72,8 +87,6 @@ struct ContentView: View {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
-
-                    Spacer()
                 }
                 .padding(14)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -81,7 +94,7 @@ struct ContentView: View {
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
                         .stroke(.white.opacity(0.14), lineWidth: 1)
                 )
-                .frame(width: 260)
+                .frame(width: 290)
 
                 ScrollView {
                     LazyVStack(spacing: 14) {
@@ -107,6 +120,11 @@ struct ContentView: View {
             .padding(20)
         }
         .frame(width: 860, height: 600)
+        .alert(reminderManager.localizationService.ui("info_title"), isPresented: $showInfo) {
+            Button(reminderManager.localizationService.ui("done"), role: .cancel) {}
+        } message: {
+            Text(reminderManager.localizationService.ui("info_message"))
+        }
         .sheet(isPresented: $showSettings) {
             SettingsView()
                 .environment(reminderManager)

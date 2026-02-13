@@ -1,71 +1,39 @@
 import SwiftUI
+import AppKit
 
 struct IntervalSliderView: View {
     @Binding var value: Double
     let range: ClosedRange<Int>
-    let marks: [Int]
     let minuteLabel: String
     let isEnabled: Bool
 
-    private let trackHeight: CGFloat = 4
-    private let thumbSize: CGFloat = 14
-
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
+            HStack {
+                Text("\(range.lowerBound) \(minuteLabel)")
+                Spacer()
+                Text("30 \(minuteLabel)")
+                Spacer()
+                Text("\(range.upperBound) \(minuteLabel)")
+            }
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+
             GeometryReader { geometry in
                 let width = max(geometry.size.width, 1)
-                let x = thumbX(in: width)
 
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(.white.opacity(0.18))
-                        .frame(height: trackHeight)
+                ZStack(alignment: .topLeading) {
+                    NativeSliderRepresentable(value: $value, range: range, isEnabled: isEnabled)
+                        .frame(height: 18)
 
-                    Capsule()
-                        .fill(isEnabled ? Color.accentColor : .secondary.opacity(0.3))
-                        .frame(width: x, height: trackHeight)
-
-                    ForEach(marks, id: \.self) { mark in
-                        Circle()
-                            .fill(.white.opacity(0.5))
-                            .frame(width: 4, height: 4)
-                            .position(x: markX(mark, in: width), y: trackHeight / 2)
-                    }
-
-                    Circle()
-                        .fill(isEnabled ? Color.accentColor : .secondary)
-                        .frame(width: thumbSize, height: thumbSize)
-                        .position(x: x, y: trackHeight / 2)
-
-                    Text("\(Int(value.rounded())) \(minuteLabel)")
+                    Text("\(Int(value.rounded()))")
                         .font(.caption)
                         .monospacedDigit()
                         .foregroundStyle(.secondary)
-                        .position(x: min(max(x, 36), width - 36), y: 24)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { drag in
-                            guard isEnabled else { return }
-                            let clampedX = min(max(drag.location.x, 0), width)
-                            let percent = clampedX / width
-                            let rawValue = Double(range.lowerBound) + percent * Double(range.upperBound - range.lowerBound)
-                            value = min(max(rawValue.rounded(), Double(range.lowerBound)), Double(range.upperBound))
-                        }
-                )
-            }
-            .frame(height: 32)
-
-            HStack {
-                ForEach(marks, id: \.self) { mark in
-                    Text("\(mark)")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
+                        .position(x: min(max(thumbX(in: width), 16), width - 16), y: 28)
                 }
             }
+            .frame(height: 34)
         }
         .opacity(isEnabled ? 1 : 0.6)
     }
@@ -78,12 +46,51 @@ struct IntervalSliderView: View {
         let percent = (clamped - minValue) / (maxValue - minValue)
         return CGFloat(percent) * width
     }
+}
 
-    private func markX(_ mark: Int, in width: CGFloat) -> CGFloat {
-        let minValue = CGFloat(range.lowerBound)
-        let maxValue = CGFloat(range.upperBound)
-        guard maxValue > minValue else { return 0 }
-        let clamped = min(max(CGFloat(mark), minValue), maxValue)
-        return ((clamped - minValue) / (maxValue - minValue)) * width
+private struct NativeSliderRepresentable: NSViewRepresentable {
+    @Binding var value: Double
+    let range: ClosedRange<Int>
+    let isEnabled: Bool
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(value: $value)
+    }
+
+    func makeNSView(context: Context) -> NSSlider {
+        let slider = NSSlider(
+            value: value,
+            minValue: Double(range.lowerBound),
+            maxValue: Double(range.upperBound),
+            target: context.coordinator,
+            action: #selector(Coordinator.valueChanged(_:))
+        )
+        slider.isContinuous = true
+        slider.allowsTickMarkValuesOnly = false
+        slider.numberOfTickMarks = 0
+        slider.controlSize = .regular
+        return slider
+    }
+
+    func updateNSView(_ nsView: NSSlider, context: Context) {
+        nsView.minValue = Double(range.lowerBound)
+        nsView.maxValue = Double(range.upperBound)
+        let clamped = min(max(value, Double(range.lowerBound)), Double(range.upperBound))
+        if abs(nsView.doubleValue - clamped) > 0.001 {
+            nsView.doubleValue = clamped
+        }
+        nsView.isEnabled = isEnabled
+    }
+
+    final class Coordinator: NSObject {
+        @Binding var value: Double
+
+        init(value: Binding<Double>) {
+            _value = value
+        }
+
+        @objc func valueChanged(_ sender: NSSlider) {
+            value = sender.doubleValue.rounded()
+        }
     }
 }

@@ -52,7 +52,6 @@ struct EditReminderView: View {
                 IntervalSliderView(
                     value: $editedInterval,
                     range: 1...60,
-                    marks: sliderMarks,
                     minuteLabel: reminderManager.localizationService.ui("minutes"),
                     isEnabled: true
                 )

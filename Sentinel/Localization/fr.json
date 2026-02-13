@@ -34,6 +34,7 @@
     "sentinel_description": "Protège ton focus avec des rappels doux.",
     "add_reminder": "Ajouter un rappel",
     "add": "Ajouter",
+    "info": "Info",
     "delete": "Supprimer",
     "close": "Fermer",
     "cancel": "Annuler",
@@ -51,6 +52,8 @@
     "done": "Terminé",
     "interval": "Intervalle",
     "create": "Créer",
+    "info_title": "À propos de Sentinel",
+    "info_message": "Sentinel t'aide à protéger ton focus et ta santé avec des rappels de pause simples pendant le travail.",
     "open": "Ouvrir",
     "quit": "Quitter"
   }

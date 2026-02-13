@@ -34,6 +34,7 @@
     "sentinel_description": "Protege tu enfoque con recordatorios suaves.",
     "add_reminder": "Agregar Recordatorio",
     "add": "Agregar",
+    "info": "Info",
     "delete": "Eliminar",
     "close": "Cerrar",
     "cancel": "Cancelar",
@@ -51,6 +52,8 @@
     "done": "Listo",
     "interval": "Intervalo",
     "create": "Crear",
+    "info_title": "Acerca de Sentinel",
+    "info_message": "Sentinel te ayuda a proteger tu enfoque y salud con recordatorios simples de descanso mientras trabajas.",
     "open": "Abrir",
     "quit": "Salir"
   }

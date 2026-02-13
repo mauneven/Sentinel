@@ -8,7 +8,6 @@ struct ReminderRowView: View {
     let onToggle: () -> Void
     let onIntervalChange: (Int) -> Void
     let isMasterEnabled: Bool
-    private let sliderMarks = [1, 10, 20, 30, 40, 50, 60]
 
     @State private var sliderValue: Double
 
@@ -23,49 +22,51 @@ struct ReminderRowView: View {
     }
 
     var body: some View {
-        HStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                Text(reminder.title)
+                    .font(.system(size: 17, weight: .semibold))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+
+                Toggle("", isOn: Binding(
+                    get: { reminder.isEnabled },
+                    set: { _ in onToggle() }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .tint(.blue)
+                .disabled(!isMasterEnabled)
+
                 Button(action: onEdit) {
-                    HStack(spacing: 6) {
-                        Text(reminder.title)
-                            .font(.body)
-                            .fontWeight(.medium)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                        Image(systemName: "pencil")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                    Image(systemName: "pencil")
+                        .font(.system(size: 14, weight: .semibold))
+                        .frame(width: 28, height: 28)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(.white.opacity(0.22), lineWidth: 1)
+                        )
                 }
                 .buttonStyle(.plain)
-
-                IntervalSliderView(
-                    value: $sliderValue,
-                    range: 1...60,
-                    marks: sliderMarks,
-                    minuteLabel: reminderManager.localizationService.ui("minutes"),
-                    isEnabled: isMasterEnabled
-                )
-                .onChange(of: sliderValue) { _, newValue in
-                    let clamped = min(max(Int(newValue.rounded()), 1), 60)
-                    onIntervalChange(clamped)
-                }
-                .onChange(of: reminder.intervalMinutes) { _, newValue in
-                    let clamped = min(max(newValue, 1), 60)
-                    if Int(sliderValue.rounded()) != clamped {
-                        sliderValue = Double(clamped)
-                    }
-                }
             }
 
-            Toggle("", isOn: Binding(
-                get: { reminder.isEnabled },
-                set: { _ in onToggle() }
-            ))
-            .toggleStyle(.switch)
-            .labelsHidden()
-            .tint(.blue)
-            .disabled(!isMasterEnabled)
+            IntervalSliderView(
+                value: $sliderValue,
+                range: 1...60,
+                minuteLabel: reminderManager.localizationService.ui("minutes"),
+                isEnabled: isMasterEnabled
+            )
+            .onChange(of: sliderValue) { _, newValue in
+                let clamped = min(max(Int(newValue.rounded()), 1), 60)
+                onIntervalChange(clamped)
+            }
+            .onChange(of: reminder.intervalMinutes) { _, newValue in
+                let clamped = min(max(newValue, 1), 60)
+                if Int(sliderValue.rounded()) != clamped {
+                    sliderValue = Double(clamped)
+                }
+            }
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 14)

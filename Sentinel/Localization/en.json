@@ -34,6 +34,7 @@
     "sentinel_description": "Protect your focus with gentle reminders.",
     "add_reminder": "Add Reminder",
     "add": "Add",
+    "info": "Info",
     "delete": "Delete",
     "close": "Close",
     "cancel": "Cancel",
@@ -51,6 +52,8 @@
     "done": "Done",
     "interval": "Interval",
     "create": "Create",
+    "info_title": "About Sentinel",
+    "info_message": "Sentinel helps you protect focus and health with simple break reminders while you work.",
     "open": "Open",
     "quit": "Quit"
   }
