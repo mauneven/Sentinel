@@ -1,4 +1,5 @@
 import Foundation
+import UserNotifications
 
 struct UpcomingReminderInfo: Identifiable {
     let id: UUID
@@ -19,6 +20,8 @@ class ReminderManager {
             saveSettings()
         }
     }
+    
+    var isNotificationAuthorized: Bool = false
 
     private var timers: [UUID: Timer] = [:]
     private var nextFireDates: [UUID: Date] = [:]
@@ -143,7 +146,15 @@ class ReminderManager {
     // MARK: - Notification Permission
 
     func requestNotificationPermission() async -> Bool {
-        return await notificationService.requestPermission()
+        let granted = await notificationService.requestPermission()
+        await checkNotificationStatus()
+        return granted
+    }
+    
+    @MainActor
+    func checkNotificationStatus() async {
+        let status = await notificationService.getAuthorizationStatus()
+        self.isNotificationAuthorized = (status == .authorized)
     }
 
     // MARK: - Timer Management
@@ -215,6 +226,7 @@ class ReminderManager {
 
         Task {
             await notificationService.requestPermission()
+            await checkNotificationStatus()
         }
 
         if isMasterEnabled {

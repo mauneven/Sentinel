@@ -66,6 +66,9 @@
     "info_why_matters_desc": "Tomar micro-descansos regulares reduce la tensión física, previene la fatiga visual y aumenta significativamente el enfoque y el rendimiento cognitivo a largo plazo.",
     "info_tips_title": "Consejos Pro",
     "info_tips_desc": "• Mantén los intervalos cortos (ej. 20m para los ojos, 45m para estirar).\n• Silencia Sentinel globalmente usando el interruptor cuando necesites enfoque profundo y sin interrupciones.",
-    "version": "Versión"
+    "version": "Versión",
+    "notifications": "Notificaciones",
+    "authorized": "Autorizadas",
+    "denied": "Denegadas"
   }
 }

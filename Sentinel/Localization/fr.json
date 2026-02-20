@@ -66,6 +66,9 @@
     "info_why_matters_desc": "Faire de courtes pauses régulières réduit la tension physique, prévient la fatigue oculaire et améliore considérablement la concentration et les performances cognitives à long terme.",
     "info_tips_title": "Conseils Pro",
     "info_tips_desc": "• Gardez des intervalles courts (ex: 20m pour les yeux, 45m pour s'étirer).\n• Mettez Sentinel en sourdine globalement à l'aide de l'interrupteur lorsque vous avez besoin d'une concentration profonde et ininterrompue.",
-    "version": "Version"
+    "version": "Version",
+    "notifications": "Notifications",
+    "authorized": "Autorisées",
+    "denied": "Refusées"
   }
 }

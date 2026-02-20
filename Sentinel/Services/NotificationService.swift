@@ -11,6 +11,10 @@ class NotificationService {
         }
     }
 
+    func getAuthorizationStatus() async -> UNAuthorizationStatus {
+        await center.notificationSettings().authorizationStatus
+    }
+
     func sendNotification(title: String, body: String, identifier: String) {
         let content = UNMutableNotificationContent()
         content.title = title

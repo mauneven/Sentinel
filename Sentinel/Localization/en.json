@@ -66,6 +66,9 @@
     "info_why_matters_desc": "Taking regular micro-breaks reduces physical strain, prevents eye fatigue, and significantly boosts long-term focus and cognitive performance.",
     "info_tips_title": "Pro Tips",
     "info_tips_desc": "• Keep the interval short (e.g. 20m for eyes, 45m for stretching).\n• Mute Sentinel globally using the toggle when you need deep, uninterrupted focus.",
-    "version": "Version"
+    "version": "Version",
+    "notifications": "Notifications",
+    "authorized": "Authorized",
+    "denied": "Denied"
   }
 }

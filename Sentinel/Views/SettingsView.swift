@@ -31,6 +31,19 @@ struct SettingsView: View {
                 }
             }
 
+            HStack {
+                Text(reminderManager.localizationService.ui("notifications"))
+                Spacer()
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(reminderManager.isNotificationAuthorized ? Color.green : Color.orange)
+                        .frame(width: 8, height: 8)
+                    Text(reminderManager.isNotificationAuthorized ? reminderManager.localizationService.ui("authorized") : reminderManager.localizationService.ui("denied"))
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
+            }
+
             Toggle(reminderManager.localizationService.ui("launch_at_login"),
                    isOn: $sm.launchAtLogin)
                 .toggleStyle(.checkbox)
@@ -47,6 +60,11 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(24)
-        .frame(width: 300, height: 250)
+        .frame(width: 320, height: 280)
+        .onAppear {
+            Task {
+                await reminderManager.checkNotificationStatus()
+            }
+        }
     }
 }
