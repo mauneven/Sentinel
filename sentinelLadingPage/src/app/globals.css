@@ -1,18 +1,45 @@
 @import "tailwindcss";
 
+/* ─── Light / Dark tokens ─── */
 :root {
-  --bg: #050505;
-  --text: #e8e8e8;
-  --muted: #888;
-  --accent: #3b82f6;
-  --accent-green: #34d399;
-  --surface: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.08);
+  --bg: #ffffff;
+  --bg-subtle: #f5f5f7;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --surface: rgba(0, 0, 0, 0.03);
+  --border: rgba(0, 0, 0, 0.08);
+  --btn-bg: #1d1d1f;
+  --btn-text: #ffffff;
+  --btn-glow: rgba(0, 0, 0, 0.08);
+  --orb-blue: rgba(59, 130, 246, 0.08);
+  --orb-green: rgba(52, 211, 153, 0.06);
+  --orb-purple: rgba(139, 92, 246, 0.05);
+  --badge-bg: rgba(0, 0, 0, 0.05);
+  --badge-border: rgba(0, 0, 0, 0.08);
+  --card-hover: rgba(0, 0, 0, 0.06);
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #050505;
+    --bg-subtle: #111;
+    --text: #e8e8e8;
+    --muted: #888;
+    --surface: rgba(255, 255, 255, 0.04);
+    --border: rgba(255, 255, 255, 0.08);
+    --btn-bg: #ffffff;
+    --btn-text: #000000;
+    --btn-glow: rgba(255, 255, 255, 0.12);
+    --orb-blue: rgba(59, 130, 246, 0.15);
+    --orb-green: rgba(52, 211, 153, 0.10);
+    --orb-purple: rgba(139, 92, 246, 0.08);
+    --badge-bg: rgba(255, 255, 255, 0.06);
+    --badge-border: rgba(255, 255, 255, 0.10);
+    --card-hover: rgba(255, 255, 255, 0.07);
+  }
 }
+
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -23,11 +50,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-::selection {
-  background: rgba(59, 130, 246, 0.3);
-}
+::selection { background: rgba(59, 130, 246, 0.3); }
 
-/* ─── Animated gradient for hero highlight ─── */
+/* ─── Animated shimmer ─── */
 @keyframes shimmer {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -35,7 +60,7 @@ body {
 }
 
 .text-shimmer {
-  background: linear-gradient(90deg, #60a5fa, #34d399, #60a5fa);
+  background: linear-gradient(90deg, #3b82f6, #34d399, #3b82f6);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -45,9 +70,9 @@ body {
 
 /* ─── Glow orbs ─── */
 @keyframes orb-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
-  33% { transform: translate(30px, -20px) scale(1.05); opacity: 0.5; }
-  66% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.3; }
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  33% { transform: translate(30px, -20px) scale(1.05); opacity: 0.7; }
+  66% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.4; }
 }
 
 .orb {
@@ -58,16 +83,18 @@ body {
   animation: orb-drift 12s ease-in-out infinite;
 }
 
-.orb-blue {
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent 70%);
+.orb-blue { background: radial-gradient(circle, var(--orb-blue), transparent 70%); }
+.orb-green { background: radial-gradient(circle, var(--orb-green), transparent 70%); animation-delay: -4s; }
+.orb-purple { background: radial-gradient(circle, var(--orb-purple), transparent 70%); animation-delay: -8s; }
+
+/* ─── CTA bounce hint ─── */
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-6px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-3px); }
 }
 
-.orb-green {
-  background: radial-gradient(circle, rgba(52, 211, 153, 0.3), transparent 70%);
-  animation-delay: -4s;
-}
-
-.orb-purple {
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.2), transparent 70%);
-  animation-delay: -8s;
+.cta-nudge {
+  animation: nudge 0.8s ease-in-out 1;
 }

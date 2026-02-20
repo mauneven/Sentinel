@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Download,
@@ -10,18 +10,36 @@ import {
   Heart,
   ChevronRight,
   Apple,
+  Github,
+  Info,
 } from "lucide-react";
 import i18n, { Lang } from "@/i18n/t";
 
-/* ── animation presets ── */
 const rise = (d = 0) => ({
   hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, delay: d, ease: [0.22, 1, 0.36, 1] } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, delay: d, ease: [0.22, 1, 0.36, 1] },
+  },
 });
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>("en");
+  const [ctaNudge, setCtaNudge] = useState(false);
   const t = i18n[lang];
+
+  useEffect(() => {
+    const timer = setTimeout(() => setCtaNudge(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (ctaNudge) {
+      const reset = setTimeout(() => setCtaNudge(false), 1000);
+      return () => clearTimeout(reset);
+    }
+  }, [ctaNudge]);
 
   const langs: { code: Lang; label: string }[] = [
     { code: "en", label: "EN" },
@@ -37,11 +55,8 @@ export default function Home() {
   ];
 
   return (
-    <div
-      className="relative min-h-screen overflow-hidden"
-      style={{ background: "var(--bg)", color: "var(--text)" }}
-    >
-      {/* ── Background Orbs ── */}
+    <div className="relative min-h-screen overflow-hidden" style={{ background: "var(--bg)", color: "var(--text)" }}>
+      {/* Background Orbs */}
       <div className="orb orb-blue w-[600px] h-[600px] -top-48 -left-40" />
       <div className="orb orb-green w-[500px] h-[500px] top-[40%] -right-32" />
       <div className="orb orb-purple w-[400px] h-[400px] bottom-[-10%] left-[25%]" />
@@ -49,41 +64,55 @@ export default function Home() {
       {/* ── Nav ── */}
       <nav className="relative z-30 mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <span className="text-[15px] font-bold tracking-tight">⛨ Sentinel</span>
-
-        <div className="flex gap-1 rounded-full border p-1" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
-          {langs.map((l) => (
-            <button
-              key={l.code}
-              onClick={() => setLang(l.code)}
-              className="rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200"
-              style={{
-                background: lang === l.code ? "#fff" : "transparent",
-                color: lang === l.code ? "#000" : "var(--muted)",
-              }}
-            >
-              {l.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-4">
+          <a
+            href="https://github.com/mauneven/Sentinel"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-70"
+            style={{ color: "var(--muted)" }}
+          >
+            <Github className="w-4 h-4" />
+            {t.ghLink}
+          </a>
+          <div className="flex gap-1 rounded-full border p-1" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+            {langs.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => setLang(l.code)}
+                className="rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200"
+                style={{
+                  background: lang === l.code ? "var(--btn-bg)" : "transparent",
+                  color: lang === l.code ? "var(--btn-text)" : "var(--muted)",
+                }}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
         </div>
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 pt-24 pb-16 text-center md:pt-36">
-        <motion.div initial="hidden" animate="show" variants={rise(0)}>
-          <span
-            className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold"
-            style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--muted)" }}
-          >
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            {t.badge}
-          </span>
+      <section className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 pt-20 pb-16 text-center md:pt-32">
+        {/* Badges */}
+        <motion.div initial="hidden" animate="show" variants={rise(0)} className="mb-8 flex flex-wrap justify-center gap-2">
+          {[t.badge1, t.badge2, t.badge3].map((badge) => (
+            <span
+              key={badge}
+              className="inline-flex items-center rounded-full px-3.5 py-1 text-xs font-semibold"
+              style={{ background: "var(--badge-bg)", border: "1px solid var(--badge-border)", color: "var(--muted)" }}
+            >
+              {badge}
+            </span>
+          ))}
         </motion.div>
 
         <motion.h1
           initial="hidden"
           animate="show"
           variants={rise(0.1)}
-          className="mt-6 text-5xl font-extrabold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl"
+          className="text-5xl font-extrabold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl"
         >
           <AnimatePresence mode="wait">
             <motion.span
@@ -119,14 +148,20 @@ export default function Home() {
           </AnimatePresence>
         </motion.p>
 
-        <motion.div initial="hidden" animate="show" variants={rise(0.35)} className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={rise(0.35)}
+          className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:gap-4"
+        >
           <a
             href="/Sentinel.zip"
             download
-            className="group flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-[15px] font-semibold text-black transition-all duration-200 hover:scale-[1.03]"
+            className={`group flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-[15px] font-semibold transition-all duration-200 hover:scale-[1.03] ${ctaNudge ? "cta-nudge" : ""}`}
             style={{
-              background: "#fff",
-              boxShadow: "0 0 40px rgba(255,255,255,0.12), 0 1px 3px rgba(0,0,0,0.3)",
+              background: "var(--btn-bg)",
+              color: "var(--btn-text)",
+              boxShadow: `0 0 40px var(--btn-glow), 0 1px 3px rgba(0,0,0,0.2)`,
             }}
           >
             <Apple className="w-4.5 h-4.5" />
@@ -147,22 +182,14 @@ export default function Home() {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 mx-auto max-w-3xl px-6 pb-24"
       >
-        <div
-          className="overflow-hidden rounded-2xl"
-          style={{ border: "1px solid var(--border)", background: "var(--surface)" }}
-        >
-          {/* macOS title bar */}
+        <div className="overflow-hidden rounded-2xl" style={{ border: "1px solid var(--border)", background: "var(--surface)" }}>
           <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
             <span className="h-3 w-3 rounded-full" style={{ background: "#ff5f57" }} />
             <span className="h-3 w-3 rounded-full" style={{ background: "#febc2e" }} />
             <span className="h-3 w-3 rounded-full" style={{ background: "#28c840" }} />
-            <span className="ml-3 text-[11px] font-medium" style={{ color: "var(--muted)" }}>
-              Sentinel
-            </span>
+            <span className="ml-3 text-[11px] font-medium" style={{ color: "var(--muted)" }}>Sentinel</span>
           </div>
-
-          {/* Screenshot */}
-          <div className="relative aspect-video w-full overflow-hidden flex items-center justify-center" style={{ background: "#0a0a0a" }}>
+          <div className="relative aspect-video w-full overflow-hidden flex items-center justify-center" style={{ background: "var(--bg-subtle)" }}>
             <AnimatePresence mode="wait">
               <motion.img
                 key={lang}
@@ -173,39 +200,32 @@ export default function Home() {
                 exit={{ opacity: 0, scale: 1.02 }}
                 transition={{ duration: 0.35 }}
                 className="h-full w-full object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
-                }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
               />
             </AnimatePresence>
-            <div className="flex flex-col items-center gap-2" style={{ color: "var(--muted)" }}>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" style={{ color: "var(--muted)" }}>
               <span className="text-3xl">⛨</span>
               <span className="text-sm font-medium">{t.preview}</span>
-              <span className="text-xs opacity-60">Add screenshots to public/screenshots/</span>
             </div>
           </div>
         </div>
       </motion.section>
 
       {/* ── Features ── */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 pb-28">
+      <section className="relative z-10 mx-auto max-w-4xl px-6 pb-24">
         <div className="grid gap-4 sm:grid-cols-2">
           {features.map((f, i) => (
             <motion.div
-              key={f.title}
+              key={i}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="rounded-2xl p-6 transition-colors duration-200"
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-              }}
+              className="group rounded-2xl p-6 transition-all duration-200 cursor-default"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.07)";
-                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.14)";
+                (e.currentTarget as HTMLDivElement).style.background = "var(--card-hover)";
+                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(128,128,128,0.2)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLDivElement).style.background = "var(--surface)";
@@ -216,12 +236,28 @@ export default function Home() {
                 {f.icon}
               </div>
               <h3 className="mb-2 text-[17px] font-bold">{f.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
-                {f.desc}
-              </p>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{f.desc}</p>
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* ── Install Help ── */}
+      <section className="relative z-10 mx-auto max-w-3xl px-6 pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="flex gap-4 rounded-2xl p-6"
+          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+        >
+          <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "var(--muted)" }} />
+          <div>
+            <h3 className="text-[15px] font-bold mb-1">{t.install_title}</h3>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{t.install_desc}</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ── CTA ── */}
@@ -232,23 +268,15 @@ export default function Home() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="rounded-2xl p-10 text-center md:p-14"
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-          }}
+          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >
           <h2 className="text-2xl font-extrabold md:text-4xl">{t.cta2}</h2>
-          <p className="mx-auto mt-4 max-w-md text-sm md:text-base" style={{ color: "var(--muted)" }}>
-            {t.cta2d}
-          </p>
+          <p className="mx-auto mt-4 max-w-md text-sm md:text-base" style={{ color: "var(--muted)" }}>{t.cta2d}</p>
           <a
             href="/Sentinel.zip"
             download
-            className="mt-8 inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-[15px] font-semibold text-black transition-all hover:scale-[1.03]"
-            style={{
-              background: "#fff",
-              boxShadow: "0 0 40px rgba(255,255,255,0.1)",
-            }}
+            className="mt-8 inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-[15px] font-semibold transition-all hover:scale-[1.03]"
+            style={{ background: "var(--btn-bg)", color: "var(--btn-text)", boxShadow: `0 0 40px var(--btn-glow)` }}
           >
             <Download className="w-4 h-4" />
             {t.cta}
