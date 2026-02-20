@@ -7,12 +7,14 @@ struct InfoView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            VStack(spacing: 12) {
-                Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 80, height: 80)
-                    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+            VStack(spacing: 8) {
+                if let appIcon = NSImage(named: NSImage.applicationIconName) ?? NSApp.applicationIconImage {
+                    Image(nsImage: appIcon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 72, height: 72)
+                        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+                }
                 
                 Text(reminderManager.localizationService.ui("info_title"))
                     .font(.system(size: 24, weight: .bold, design: .default))

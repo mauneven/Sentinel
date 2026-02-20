@@ -27,8 +27,12 @@ struct IntervalSliderView: View {
                         .frame(height: 10)
                         .offset(y: 8)
 
-                    NativeSliderRepresentable(value: $value, range: range, isEnabled: isEnabled)
-                        .frame(height: 18)
+                    Slider(value: Binding(
+                        get: { value },
+                        set: { newValue in value = newValue.rounded() }
+                    ), in: Double(range.lowerBound)...Double(range.upperBound))
+                    .disabled(!isEnabled)
+                    .frame(height: 18)
 
                     Text("\(Int(value.rounded()))")
                         .font(.caption)
@@ -48,7 +52,8 @@ struct IntervalSliderView: View {
         guard maxValue > minValue else { return 0 }
         let clamped = min(max(value, minValue), maxValue)
         let percent = (clamped - minValue) / (maxValue - minValue)
-        return CGFloat(percent) * width
+        let inset: CGFloat = 8
+        return inset + CGFloat(percent) * (width - inset * 2)
     }
 }
 
@@ -95,49 +100,3 @@ private struct TickMarksView: View {
     }
 }
 
-private struct NativeSliderRepresentable: NSViewRepresentable {
-    @Binding var value: Double
-    let range: ClosedRange<Int>
-    let isEnabled: Bool
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(value: $value)
-    }
-
-    func makeNSView(context: Context) -> NSSlider {
-        let slider = NSSlider(
-            value: value,
-            minValue: Double(range.lowerBound),
-            maxValue: Double(range.upperBound),
-            target: context.coordinator,
-            action: #selector(Coordinator.valueChanged(_:))
-        )
-        slider.isContinuous = true
-        slider.allowsTickMarkValuesOnly = false
-        slider.numberOfTickMarks = 0
-        slider.controlSize = .regular
-        return slider
-    }
-
-    func updateNSView(_ nsView: NSSlider, context: Context) {
-        nsView.minValue = Double(range.lowerBound)
-        nsView.maxValue = Double(range.upperBound)
-        let clamped = min(max(value, Double(range.lowerBound)), Double(range.upperBound))
-        if abs(nsView.doubleValue - clamped) > 0.001 {
-            nsView.doubleValue = clamped
-        }
-        nsView.isEnabled = isEnabled
-    }
-
-    final class Coordinator: NSObject {
-        @Binding var value: Double
-
-        init(value: Binding<Double>) {
-            _value = value
-        }
-
-        @objc func valueChanged(_ sender: NSSlider) {
-            value = sender.doubleValue.rounded()
-        }
-    }
-}

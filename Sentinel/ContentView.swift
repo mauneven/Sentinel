@@ -153,7 +153,6 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .navigationSplitViewStyle(.automatic)
-            .animation(.easeInOut(duration: 0.2), value: splitVisibility)
         }
         // Avoid broad root-level animations to prevent layout stutter
         .frame(minWidth: 860, minHeight: 600)
