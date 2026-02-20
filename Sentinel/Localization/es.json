@@ -59,6 +59,13 @@
     "hide_sidebar": "Ocultar barra lateral",
     "show_sidebar": "Mostrar barra lateral",
     "open": "Abrir",
-    "quit": "Salir"
+    "quit": "Salir",
+    "info_how_it_works_title": "Cómo funciona",
+    "info_how_it_works_desc": "Sentinel vive discretamente en tu barra de menú. Añade recordatorios personalizados para estirar, tomar agua o descansar la vista. Cuando sea el momento, recibirás una suave notificación.",
+    "info_why_matters_title": "Por qué es importante",
+    "info_why_matters_desc": "Tomar micro-descansos regulares reduce la tensión física, previene la fatiga visual y aumenta significativamente el enfoque y el rendimiento cognitivo a largo plazo.",
+    "info_tips_title": "Consejos Pro",
+    "info_tips_desc": "• Mantén los intervalos cortos (ej. 20m para los ojos, 45m para estirar).\n• Silencia Sentinel globalmente usando el interruptor cuando necesites enfoque profundo y sin interrupciones.",
+    "version": "Versión"
   }
 }

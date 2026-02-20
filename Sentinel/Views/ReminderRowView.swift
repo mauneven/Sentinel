@@ -8,17 +8,18 @@ struct ReminderRowView: View {
     let onToggle: () -> Void
     let onIntervalChange: (Int) -> Void
     let isMasterEnabled: Bool
+    let onMasterDisabledAttempt: () -> Void
 
     @State private var sliderValue: Double
-    @State private var wigglePhase: CGFloat = 0
 
     init(reminder: Reminder, onEdit: @escaping () -> Void, onToggle: @escaping () -> Void,
-         onIntervalChange: @escaping (Int) -> Void, isMasterEnabled: Bool) {
+         onIntervalChange: @escaping (Int) -> Void, isMasterEnabled: Bool, onMasterDisabledAttempt: @escaping () -> Void) {
         self.reminder = reminder
         self.onEdit = onEdit
         self.onToggle = onToggle
         self.onIntervalChange = onIntervalChange
         self.isMasterEnabled = isMasterEnabled
+        self.onMasterDisabledAttempt = onMasterDisabledAttempt
         self._sliderValue = State(initialValue: Double(min(max(reminder.intervalMinutes, 1), 60)))
     }
 
@@ -74,9 +75,7 @@ struct ReminderRowView: View {
                     get: { displayEnabledState },
                     set: { _ in
                         guard isMasterEnabled else {
-                            withAnimation(.easeInOut(duration: 0.42)) {
-                                wigglePhase += 1
-                            }
+                            onMasterDisabledAttempt()
                             return
                         }
                         onToggle()
@@ -86,7 +85,6 @@ struct ReminderRowView: View {
                 .labelsHidden()
                 .tint(.blue)
                 .animation(.easeInOut(duration: 0.2), value: isMasterEnabled)
-                .modifier(WiggleEffect(progress: wigglePhase))
             }
             .padding(.top, 2)
         }
@@ -97,20 +95,5 @@ struct ReminderRowView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(.white.opacity(0.2), lineWidth: 1)
         )
-    }
-}
-
-private struct WiggleEffect: GeometryEffect {
-    var progress: CGFloat
-
-    var animatableData: CGFloat {
-        get { progress }
-        set { progress = newValue }
-    }
-
-    func effectValue(size: CGSize) -> ProjectionTransform {
-        let amplitude: CGFloat = 4
-        let translation = amplitude * sin(progress * .pi * 6)
-        return ProjectionTransform(CGAffineTransform(translationX: translation, y: 0))
     }
 }

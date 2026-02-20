@@ -59,6 +59,13 @@
     "hide_sidebar": "Hide Sidebar",
     "show_sidebar": "Show Sidebar",
     "open": "Open",
-    "quit": "Quit"
+    "quit": "Quit",
+    "info_how_it_works_title": "How it works",
+    "info_how_it_works_desc": "Sentinel stays quietly in your menu bar. Add personalized reminders for stretching, drinking water, or resting your eyes. When it's time, you'll get a gentle notification.",
+    "info_why_matters_title": "Why it matters",
+    "info_why_matters_desc": "Taking regular micro-breaks reduces physical strain, prevents eye fatigue, and significantly boosts long-term focus and cognitive performance.",
+    "info_tips_title": "Pro Tips",
+    "info_tips_desc": "• Keep the interval short (e.g. 20m for eyes, 45m for stretching).\n• Mute Sentinel globally using the toggle when you need deep, uninterrupted focus.",
+    "version": "Version"
   }
 }

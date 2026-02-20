@@ -21,6 +21,17 @@ struct ContentView: View {
     @State private var showSettings = false
     @State private var showInfo = false
     @State private var searchText = ""
+    @State private var splitVisibility: NavigationSplitViewVisibility = .all
+    @State private var masterWigglePhase: CGFloat = 0
+
+    private var splitVisibilityBinding: Binding<NavigationSplitViewVisibility> {
+        Binding(
+            get: { splitVisibility },
+            set: { newValue in
+                splitVisibility = newValue
+            }
+        )
+    }
 
     private var filteredReminders: [Reminder] {
         guard !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -39,7 +50,7 @@ struct ContentView: View {
             MacOSBlurBackground()
                 .ignoresSafeArea()
 
-            NavigationSplitView {
+            NavigationSplitView(columnVisibility: splitVisibilityBinding) {
                 VStack(alignment: .leading, spacing: 14) {
                     HStack(spacing: 12) {
                         Text(reminderManager.localizationService.ui("sentinel"))
@@ -59,6 +70,7 @@ struct ContentView: View {
                         ))
                         .toggleStyle(.switch)
                         .labelsHidden()
+                        .modifier(WiggleEffect(progress: masterWigglePhase))
                     }
 
                     Text(reminderManager.localizationService.ui("sentinel_description"))
@@ -121,7 +133,12 @@ struct ContentView: View {
                                         updated.intervalMinutes = newInterval
                                         reminderManager.updateReminder(updated)
                                     },
-                                    isMasterEnabled: reminderManager.isMasterEnabled
+                                    isMasterEnabled: reminderManager.isMasterEnabled,
+                                    onMasterDisabledAttempt: {
+                                        withAnimation(.easeInOut(duration: 0.42)) {
+                                            masterWigglePhase += 1
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -136,6 +153,7 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .navigationSplitViewStyle(.automatic)
+            .animation(.easeInOut(duration: 0.2), value: splitVisibility)
         }
         // Avoid broad root-level animations to prevent layout stutter
         .frame(minWidth: 860, minHeight: 600)
@@ -157,10 +175,9 @@ struct ContentView: View {
                 }
             }
         }
-        .alert(reminderManager.localizationService.ui("info_title"), isPresented: $showInfo) {
-            Button(reminderManager.localizationService.ui("done"), role: .cancel) {}
-        } message: {
-            Text(reminderManager.localizationService.ui("info_message"))
+        .sheet(isPresented: $showInfo) {
+            InfoView()
+                .environment(reminderManager)
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
@@ -178,3 +195,17 @@ struct ContentView: View {
     }
 }
 
+private struct WiggleEffect: GeometryEffect {
+    var progress: CGFloat
+
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        let amplitude: CGFloat = 4
+        let translation = amplitude * sin(progress * .pi * 6)
+        return ProjectionTransform(CGAffineTransform(translationX: translation, y: 0))
+    }
+}
